@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# abcd setup — symlink each abcd-* skill into the host skills dir so Claude Code
+# discovers it. Portable (works from wherever the repo is cloned). Idempotent.
+set -u
+
+SOURCE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
+SKILLS_DIR="${ABCD_SKILLS_DIR:-$HOME/.claude/skills}"
+
+link_skill() {
+  # $1 = absolute path to a skill subdir containing SKILL.md
+  local dir="$1" name target
+  name="$(basename "$dir")"
+  target="$SKILLS_DIR/$name"
+  if [ -L "$target" ]; then
+    rm -f "$target"
+  elif [ -e "$target" ]; then
+    mv "$target" "$target.bak.$(date +%s)"
+    echo "  (backed up existing $name -> $name.bak.*)"
+  fi
+  ln -s "$dir" "$target"
+  echo "  -> $name"
+}
+
+main() {
+  mkdir -p "$SKILLS_DIR"
+  echo "abcd setup: $SOURCE_DIR -> $SKILLS_DIR"
+  local n=0
+  for dir in "$SOURCE_DIR"/abcd-*/; do
+    [ -f "${dir}SKILL.md" ] || continue
+    link_skill "${dir%/}"
+    n=$((n + 1))
+  done
+  echo "Linked $n skill(s)."
+
+  echo "Renderers (optional; diagrams also render natively on GitHub):"
+  if command -v mmdc >/dev/null 2>&1; then
+    echo "  mermaid-cli (mmdc): ok"
+  else
+    echo "  mermaid-cli (mmdc): missing -- 'npm i -g @mermaid-js/mermaid-cli', or reuse gstack /diagram"
+  fi
+  if command -v plantuml >/dev/null 2>&1; then
+    echo "  plantuml: ok"
+  elif command -v java >/dev/null 2>&1; then
+    echo "  plantuml: missing but java present -- 'brew install plantuml' for use-case diagrams"
+  else
+    echo "  plantuml/java: missing -- 'brew install plantuml' for use-case diagrams"
+  fi
+
+  echo "Done. Restart Claude Code (or rescan skills) to pick up /abcd-* commands."
+}
+
+main "$@"
