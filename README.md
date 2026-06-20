@@ -9,7 +9,7 @@ Turn a software system — existing code, or a fresh design discussion — into 
 ## Install
 
 ```bash
-git clone https://github.com/<you>/abcd ~/.claude/skills/abcd
+git clone https://github.com/cpd13868584/abcd ~/.claude/skills/abcd
 cd ~/.claude/skills/abcd && ./setup
 ```
 
