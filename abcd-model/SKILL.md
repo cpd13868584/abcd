@@ -23,4 +23,4 @@ triggers:
 
 对话式走完《软件方法》ABCD 正向链：愿景（老大+组织+量化目标）→ 业务用例图 → 业务序列图（现状→改进）→ 系统用例图 + 用例规约 → 分析类图。每层从上一层推导；改进版业务序列图指向系统的每条消息 = 一个系统用例。可吃 `/abcd-recover` 的骨架作起点，再主动问询补全。
 
-> 🚧 **WIP** — 流程实现中。方法步骤（爆炸法定老大、四种改进模式、四步曲规约、剥离与 linter）见 `shared/references/method-abcd.md`；完整设计见 `abcd-skill-brief.md` §2 / §6 / §7。
+> 🚧 **WIP** — 流程实现中。方法步骤（爆炸法定老大、四种改进模式、四步曲规约、剥离与 linter）见 `shared/references/method-abcd.md`；产出结构见 `shared/references/package-spec.md`。

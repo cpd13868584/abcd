@@ -17,4 +17,4 @@ triggers:
 
 把 `design/` 设计包组装成交接物：生成索引 `README.md`、校验 `manifest.json` 一致性、渲染 `.mmd`/`.puml` 到 `rendered/*.svg`（Mermaid 可复用 gstack `/diagram`，PlantUML 自带）。
 
-> 🚧 **WIP** — 流程实现中。设计包结构见 `shared/references/package-spec.md`；完整设计见 `abcd-skill-brief.md` §6。
+> 🚧 **WIP** — 流程实现中。设计包结构见 `shared/references/package-spec.md`；渲染见 `shared/references/diagram-syntax.md`。

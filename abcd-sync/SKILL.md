@@ -20,4 +20,4 @@ triggers:
 
 两件事：重提取并 diff 图 vs 当前代码（防过时）；对照正向建出的需求/分析模型与 `manifest.ai_spec.acceptance` 校验代码有没有跑偏——AI 时代的高价值验收闸门。
 
-> 🚧 **WIP** — 机制待定（见 `abcd-skill-brief.md` §5 B 组讨论）。契约字段见 `package-spec.md` 的 `ai_spec`。
+> 🚧 **WIP** — 机制待定。契约字段见 `shared/references/package-spec.md` 的 `ai_spec`（`acceptance` 用于校验代码是否仍满足正向需求/分析模型）。

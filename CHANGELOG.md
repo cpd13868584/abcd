@@ -3,6 +3,7 @@
 ## 0.1.0 — unreleased
 
 - Scaffold: repo structure, portable `setup` (symlinks `abcd-*` into the host skills dir), MIT license, README.
-- Five skill stubs: `abcd-model`, `abcd-recover`, `abcd-trace`, `abcd-sync`, `abcd-handoff`.
-- Design grounded in 潘加宇《软件方法》ABCD workflow. Full design brief: `abcd-skill-brief.md` (v2).
-- Next: flesh out `shared/references/{package-spec,method-abcd,diagram-syntax,conventions}.md`, then `/abcd-recover` + `/abcd-trace`; dogfood on a single flow.
+- Shared references (`shared/references/`): `package-spec.md` (design-package contract + manifest schema), `method-abcd.md` (the ABCD method encoded — constitution, business-sequence rules, use-case spec template, analysis stripping, class-diagram linter, forward/reverse boundary), `diagram-syntax.md`, `conventions.md`.
+- `/abcd-recover` + `/abcd-trace`: reverse flows implemented, codified from a real dogfood (recovered the KOL-campaign email-outreach flow into design-level sequences + class diagram + a stripped analysis-level domain model).
+- `/abcd-model`, `/abcd-sync`, `/abcd-handoff`: WIP stubs.
+- Grounded in 潘加宇《软件方法》ABCD workflow.
