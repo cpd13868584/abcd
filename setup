@@ -32,6 +32,15 @@ main() {
   done
   echo "Linked $n skill(s)."
 
+  # Prune stale abcd-* symlinks that point into this repo but whose target is gone
+  # (handles renamed/removed skills on update, e.g. recover->map, trace/sync dropped).
+  for link in "$SKILLS_DIR"/abcd-*; do
+    [ -L "$link" ] || continue
+    case "$(readlink "$link")" in
+      "$SOURCE_DIR"/*) [ -e "$link" ] || { rm -f "$link"; echo "  (pruned stale $(basename "$link"))"; } ;;
+    esac
+  done
+
   echo "Renderers (optional; diagrams also render natively on GitHub):"
   if command -v mmdc >/dev/null 2>&1; then
     echo "  mermaid-cli (mmdc): ok"

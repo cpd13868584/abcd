@@ -22,6 +22,26 @@ WF = {
     "D": "D · Design / Reverse",
 }
 
+WF_GLOSS = {
+    "A": "model the business value &amp; flow first — where AI shifts the value.",
+    "B": "system use cases &amp; specs, derived from the business.",
+    "C": "the conceptual object / domain model.",
+    "D": "design-level structure &amp; sequences, including what is recovered from code.",
+}
+
+# One-line meaning per diagram type — shown in the legend only for the types present.
+TYPE_GLOSS = {
+    "business-usecase": "Business use case — the value the organization delivers to its actors (outcomes, not system features).",
+    "business-sequence": "Business sequence — who does what, in what order, to deliver that value. as-is = how it works today; to-be = the improved flow the system enables.",
+    "usecase": "System use case — a goal a user achieves with the system; the contract for what to build.",
+    "activity": "Activity diagram — the basic + alternate paths of one use case (the spec's path view).",
+    "domain-model": "Domain model — the conceptual vocabulary of the problem (analysis-level, implementation stripped out).",
+    "class": "Class diagram — the object model: classes with attributes, operations &amp; relationships. Analysis = conceptual; design = distilled from code (operations included).",
+    "data-model": "Data model — entities, fields &amp; foreign keys from the schema. Structure only, no behaviour — not an OO class diagram.",
+    "system-sequence": "System sequence — one flow with each service as a black box (service ↔ service).",
+    "design-sequence": "Design sequence — the same flow drilled into code: lifelines are modules/classes, messages are real method calls (the call graph).",
+}
+
 
 def read(p: pathlib.Path):
     try:
@@ -34,6 +54,61 @@ def badge(text, kind=""):
     if text is None or text == "":
         return ""
     return f'<span class="badge {kind}">{html.escape(str(text))}</span>'
+
+
+def legend_html(diagrams, m):
+    """Self-teaching legend: the ABCD method + what each diagram type / badge means."""
+    types_here = {d.get("type") for d in diagrams if d.get("type")}
+    order = [
+        "business-usecase", "business-sequence", "usecase", "activity",
+        "domain-model", "class", "data-model", "system-sequence", "design-sequence",
+    ]
+    present = [t for t in order if t in types_here]
+    present += [t for t in sorted(types_here) if t not in present and t in TYPE_GLOSS]
+
+    abcd = "".join(
+        f"<li><b>{html.escape(WF.get(k, k))}</b> — {WF_GLOSS[k]}</li>" for k in ["A", "B", "C", "D"]
+    )
+    types = "".join(
+        f"<li><code>{html.escape(t)}</code> — {TYPE_GLOSS[t]}</li>" for t in present if t in TYPE_GLOSS
+    )
+    core = (
+        "<li><b>Profit = Requirements − Design.</b> AI makes design/coding cheap, so value moves "
+        "upstream to business modeling (A).</li>"
+        "<li><b>You cannot reverse-engineer requirements from code.</b> Reverse recovers the design-level "
+        "as-is only; business &amp; requirements are modeled forward, with you in the loop.</li>"
+        "<li><b>OO is an analysis lens, not a code-syntax property.</b> Even functional code has a latent "
+        "object model worth drawing.</li>"
+    )
+    badges = (
+        '<span class="badge prov-forward">forward</span> modeled with you (top-down) &middot; '
+        '<span class="badge prov-reverse">reverse</span> recovered from code (the as-is) &middot; '
+        '<span class="badge prov-hybrid">hybrid</span> recovered skeleton + modeling judgment'
+    )
+    uf = m.get("uncovered_flows") or []
+    uf_html = ""
+    if uf:
+        items = "".join(
+            "<li>" + html.escape(u.get("node", ""))
+            + (f' — <span class="muted">{html.escape(u.get("reason", ""))}</span>' if u.get("reason") else "")
+            + (f' <code>{html.escape(u.get("code_hint", ""))}</code>' if u.get("code_hint") else "")
+            + "</li>"
+            for u in uf
+        )
+        uf_html = (
+            '<div class="uncovered"><b>Not covered yet</b> — reverse only maps the flows it traced; '
+            f"these exist in the code but were not recovered:<ul>{items}</ul></div>"
+        )
+    return (
+        '<details class="legend" open><summary>What am I looking at? · 软件方法 (ABCD)</summary>'
+        '<p class="muted">A standardized <b>diagram-as-code</b> design package. A manifest keeps every diagram '
+        "in one navigable model (business ↔ code), so humans read the pictures and AI reads the source.</p>"
+        f'<div class="lg"><b>The four workflows</b><ul>{abcd}</ul></div>'
+        f'<div class="lg"><b>Core method</b><ul>{core}</ul></div>'
+        f'<div class="lg"><b>Diagram types in this package</b><ul>{types}</ul></div>'
+        f'<div class="lg"><b>Provenance</b> <span class="muted">{badges}</span></div>'
+        f"{uf_html}</details>"
+    )
 
 
 def render_card(d, design: pathlib.Path):
@@ -74,7 +149,7 @@ def render_card(d, design: pathlib.Path):
             view = f'<div class="svgwrap">{svg}</div>'
         else:
             view = (
-                "<details><summary>PlantUML source (install plantuml so /abcd-handoff "
+                "<details><summary>PlantUML source (install plantuml so the render step "
                 f'pre-renders it to SVG)</summary><pre class="src">{html.escape(src)}</pre></details>'
             )
     return (
@@ -127,6 +202,8 @@ def main():
         f"{len(diagrams)} diagrams · source is the single source of truth; "
         "Mermaid renders locally in the browser</p></header>"
     )
+
+    parts.append(legend_html(diagrams, m))
 
     for wf in ["A", "B", "C", "D"]:
         ds = groups.get(wf)
@@ -181,6 +258,16 @@ TEMPLATE = """<!doctype html>
   .muted{color:var(--fg2);font-size:13px}
   .vision{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:10px 14px;margin:10px 0;font-size:14px}
   .vision ul{margin:6px 0 0;padding-left:18px}
+  .legend{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px 16px;margin:14px 0}
+  .legend>summary{cursor:pointer;font-weight:600;font-size:15px}
+  .legend .lg{margin:12px 0 0}
+  .legend ul{margin:4px 0 0;padding-left:18px;font-size:13.5px}
+  .legend li{margin:3px 0}
+  .legend code{background:var(--bg);padding:1px 5px;border-radius:4px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .uncovered{margin:12px 0 0;font-size:13.5px;color:var(--coral)}
+  .uncovered ul{margin:4px 0 0;padding-left:18px}
+  .uncovered code{color:var(--fg2)}
   .card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:16px;margin:14px 0}
   .chead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
   .badges{display:flex;gap:6px;flex-wrap:wrap}

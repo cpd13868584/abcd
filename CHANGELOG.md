@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.5.0
+
+- **Command set simplified 5 → 3** (clearer names, less overlap): `/abcd-recover` → **`/abcd-map`** (map a codebase; `--flow` absorbs the old `/abcd-trace`); `/abcd-handoff` → **`/abcd-view`** (render/open the viewer); **`/abcd-sync` removed** (unproven drift-gate — re-add as `/abcd-check` if a real need emerges); `/abcd-trace` removed (now `/abcd-map --flow`).
+- **HTML viewer is now core, not a separate "handoff" step**: `/abcd-model` and `/abcd-map` **auto-render `design/index.html`** at the end. `/abcd-view` is the standalone re-render (after hand-edits, or for a package you received). Rationale: rendered diagrams are the point for humans; the `.mmd`/`manifest` source stays the AI-facing single source of truth.
+- **`/abcd-model` on existing code** now recovers the as-is (via `/abcd-map`) first, then runs the forward dialogue — instead of starting from nothing.
+- **`setup` prunes stale `abcd-*` symlinks** that point into the repo but no longer exist, so renames/removals apply cleanly on update.
+
+## 0.4.0
+
+- **Self-teaching HTML viewer** (`build_index_html.py`): every generated `index.html` now opens with a legend — the four ABCD workflows, the core method in three lines, a one-line meaning for each diagram type *present in the package*, and what the provenance badges mean. New users (and anyone you share a package with) understand what they are looking at without opening the references.
+- **`uncovered_flows` in the manifest**: reverse can now declare flows that exist in the code but were not recovered (`node` + `reason` + `code_hint`). The viewer renders them as a "Not covered yet" callout, so a partial reverse map never reads as the whole. Documented in `package-spec`; `/abcd-recover` fills it.
+- **README: Concepts section** — a diagram catalog (what each type represents + who it is for) plus the provenance legend.
+
 ## 0.3.1
 
 - **Docs in English** (`README`, all five `SKILL.md`, the four `shared/references/`, plus script comments and the HTML viewer UI). Only the book citation (潘加宇《软件方法》) and a few Chinese invocation triggers are kept — makes the skill cleanly shareable.
