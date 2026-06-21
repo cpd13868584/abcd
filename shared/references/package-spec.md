@@ -24,7 +24,8 @@ design/
   recovered/                # 逆向：设计级 as-built（与正向物理隔离）
     class.mmd
     architecture.mmd
-    sequences/<flow>.mmd
+    sequences/<flow>.mmd             # 系统序列图（系统 ↔ 外部系统/服务）
+    sequences/<flow>.design.mmd      # 设计序列图（对象/方法级，可选；把系统盒子拆成内部对象）
     business-sequence-skeleton.mmd   # 业务序列图骨架（gap-marked，待 /abcd-model 补全）
   rendered/*.svg            # 渲染图（给人看；AI 直接读源码，无需 rendered）
 ```
@@ -50,7 +51,7 @@ design/
     {
       "id": "biz-seq-checkout-tobe",
       "workflow": "A",                     // A|B|C|D
-      "type": "business-sequence",         // usecase|business-usecase|business-sequence|system-sequence|class|state|er|architecture
+      "type": "business-sequence",         // usecase|business-usecase|business-sequence|system-sequence|design-sequence|class|state|er|architecture
       "tool": "mermaid",                   // mermaid|plantuml
       "provenance": "forward",             // forward|reverse|hybrid
       "level": "business",                 // business|requirement|analysis|design

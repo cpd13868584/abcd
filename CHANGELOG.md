@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.0
+
+- **Design sequence diagrams (object/method level)**: `/abcd-trace --level design` and `/abcd-recover` now recover a design-level sequence whose lifelines are code modules/classes and whose messages are **real method calls** — the call graph for one flow. It's the most faithful reverse artifact (names come straight from code) and the best map for an AI to navigate and modify code. New `type: design-sequence`, file `recovered/sequences/<flow>.design.mmd`. Complements the coarser system-sequence (which keeps the system a black box).
+- **as-is / to-be × level discipline** (`method-abcd` §5–6): reverse-from-code ≈ the *as-is*, but only complete at the system/design level; business-level as-is recovers just the system-touching skeleton, and any *to-be* (improvement) is forward dialogue only — modeled after plan-review-style role lenses (business-owner / engineering).
+- **Self-contained HTML viewer** (`/abcd-handoff`): new `shared/scripts/build_index_html.py` generates `design/index.html` — diagrams grouped by A/B/C/D with provenance / level / type / gaps / code-ref annotations + a traceability table. Mermaid renders client-side via CDN (`mermaid@11`); the source never leaves the browser.
+- **Offline PlantUML rendering**: new `shared/scripts/render_plantuml.sh` pre-renders use-case / activity diagrams to inline SVG via local `plantuml` + graphviz (fully offline, no data leaves the machine). The handoff flow installs plantuml when missing so the viewer shows real diagrams, not source dumps.
+
 ## 0.1.0 — unreleased
 
 - Scaffold: repo structure, portable `setup` (symlinks `abcd-*` into the host skills dir), MIT license, README.

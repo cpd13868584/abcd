@@ -8,6 +8,7 @@
 |---|---|---|
 | 业务用例图 / 系统用例图 | PlantUML | `.puml` |
 | 业务序列图 / 系统序列图 | Mermaid `sequenceDiagram` | `.mmd` |
+| 设计序列图（对象/方法级） | Mermaid `sequenceDiagram` | `.design.mmd` |
 | 类图 / 领域模型 | Mermaid `classDiagram` | `.mmd` |
 | 状态机 | Mermaid `stateDiagram-v2` | `.mmd` |
 | ER | Mermaid `erDiagram` | `.mmd` |
@@ -40,7 +41,8 @@ sequenceDiagram
     Note over S: path:line
 ```
 - **业务序列图**：消息=责任、不写"请求"、不画返回、系统黑箱（method-abcd §2）。
-- **系统序列图（逆向设计级）**：正常技术交互，可画返回；`Note` 挂 `文件:行`。
+- **系统序列图（逆向设计级）**：泳道 = 本系统 + 外部系统/服务；消息 = 服务间调用，可画返回；`Note` 挂 `文件:行`。
+- **设计序列图（逆向设计级 · 对象/方法级）**：泳道 = 系统内部代码模块/类，消息 = 真实方法调用 `mod.method(args)`，可画返回（`-->>`）；`opt`/`alt`/`loop` 表分支，幂等/守门/异常分支用 `Note`；`Note` 挂 `文件:行`；文件 `<flow>.design.mmd`、`type=design-sequence`。它把系统序列图里的"系统"盒子拆成内部对象协作。
 
 ### 类图（Mermaid）
 ```mermaid
