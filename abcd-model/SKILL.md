@@ -3,8 +3,9 @@ name: abcd-model
 description: |
   Forward (flagship): dialogue-driven A→B→C business modeling — vision → business
   use-case / sequence (as-is → to-be) → system use cases / specs → analysis class model.
-  The output doubles as the spec that drives AI to write code (D). Use when asked to
-  "model this business", "abcd model", "forward modeling", "为业务建模", "正向建模". (abcd)
+  The output doubles as the spec that drives AI to write code (D); `--only <type>`
+  produces a single forward diagram. Use when asked to "model this business",
+  "abcd model", "forward modeling", "为业务建模", "正向建模". (abcd)
 allowed-tools:
   - Bash
   - Read
@@ -16,7 +17,7 @@ allowed-tools:
   - AskUserQuestion
 ---
 
-# /abcd-model [--to A|B|C] [path]
+# /abcd-model [--to A|B|C] [--only <type>] [path]
 
 Walk 潘加宇《软件方法》 ABCD forward and in dialogue: A business modeling → B requirements → C analysis. **Each layer derives from the one above**; the output is the spec that drives AI to write D. When code already exists, **first run `/abcd-map`** to recover the design-level as-is, then take those assets as a **reference starting point** (don't let the forward model drift from the implementation).
 
@@ -40,4 +41,5 @@ Read on demand: `shared/references/method-abcd.md` (§2 A, §3 spec template, §
 ## Wrap-up
 - Write the manifest (see package-spec): `vision`, each diagram's `provenance=forward`/`level`, `use_cases`, `traceability` (use case→analysis class→code), `ai_spec.is_implementation_input=true` (`constraints`/`acceptance` as the implementation contract).
 - **Auto-render the viewer** (always — the diagrams are for humans to see): `bash <abcd-repo>/shared/scripts/render_plantuml.sh design` then `python3 <abcd-repo>/shared/scripts/build_index_html.py design` → `design/index.html` (the `shared/` dir is in the abcd repo root, one level up from this skill folder; install `plantuml` if missing so use-case diagrams render as images). Tell the user the path; re-render later with `/abcd-view`.
-- **Dialogue discipline**: A's vision / stakeholder interests **must be asked, never invented**; mark `gap` for what code/docs can't give; don't decide for the boss. `--to A|B|C` controls where to stop.
+- **Scope flags**: `--to A|B|C` stops at a layer; **`--only <type>`** produces a single forward diagram — `business-usecase` · `business-sequence`(`:as-is`|`:to-be`) · `usecase` · `spec` · `analysis-class` — gathering only that diagram's prerequisite context by dialogue (don't fabricate), then rendering.
+- **Dialogue discipline**: A's vision / stakeholder interests **must be asked, never invented**; mark `gap` for what code/docs can't give; don't decide for the boss.

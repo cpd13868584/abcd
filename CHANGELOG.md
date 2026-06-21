@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.0
+
+- **`--only <type>` — generate a single diagram** on both commands. `/abcd-map --only class|data-model|architecture|domain|system-sequence|design-sequence` (reverse types; sequence types pair with `--flow`); `/abcd-model --only business-usecase|business-sequence|usecase|spec|analysis-class` (forward types). `/abcd-map` **refuses forward types** and points to `/abcd-model` — keeping the "requirements can't be reversed from code" boundary intact.
+
 ## 0.5.0
 
 - **Command set simplified 5 → 3** (clearer names, less overlap): `/abcd-recover` → **`/abcd-map`** (map a codebase; `--flow` absorbs the old `/abcd-trace`); `/abcd-handoff` → **`/abcd-view`** (render/open the viewer); **`/abcd-sync` removed** (unproven drift-gate — re-add as `/abcd-check` if a real need emerges); `/abcd-trace` removed (now `/abcd-map --flow`).

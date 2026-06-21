@@ -32,13 +32,14 @@ cd ~/.claude/skills/abcd && ./setup
 /abcd-model
 ```
 
-Claude walks you through A→B→C: vision → business sequence (as-is → to-be) → system use cases / specs → analysis class model, then renders the HTML viewer. Vision and requirements come from conversation (a hard rule of the method), so expect to answer questions — it is not one-button generation. Point it at existing code and it recovers the as-is (via `/abcd-map`) first, then dialogues the business *why*.
+Claude walks you through A→B→C: vision → business sequence (as-is → to-be) → system use cases / specs → analysis class model, then renders the HTML viewer. Vision and requirements come from conversation (a hard rule of the method), so expect to answer questions — it is not one-button generation. Point it at existing code and it recovers the as-is (via `/abcd-map`) first, then dialogues the business *why*. Use `--to A|B|C` to stop at a layer, or `--only <type>` (e.g. `business-sequence`, `usecase`) for a single diagram.
 
 **Map an existing codebase's as-is (reverse):**
 
 ```
 /abcd-map               # whole module → class / data-model / sequence diagrams + a stripped domain model
 /abcd-map --flow login  # one flow → its sequence diagram(s) (--level system|design)
+/abcd-map --only class  # just one diagram (class / data-model / architecture / sequence)
 ```
 
 `model` and `map` both write a `design/` package **and auto-render an `index.html` viewer**. To re-render after editing a diagram, or to view a package someone sent you:
@@ -53,8 +54,8 @@ All commands are project-agnostic: point them at any project.
 
 | Command | Mode | What it does |
 |---|---|---|
-| `/abcd-model` | forward | Dialogue-driven A→B→C modeling: vision → business sequence (as-is → to-be) → system use cases / specs → analysis class model. On existing code, recovers the as-is first. Output doubles as an AI implementation spec. Auto-renders the viewer. |
-| `/abcd-map` | reverse | Read code → design-level as-built: distilled OO class diagram (attributes + operations) + data model + system & design sequence diagrams + a stripped analysis domain model. `--flow <name>` maps a single flow. Auto-renders the viewer. |
+| `/abcd-model` | forward | Dialogue-driven A→B→C modeling: vision → business sequence (as-is → to-be) → system use cases / specs → analysis class model. On existing code, recovers the as-is first. Output doubles as an AI implementation spec. Auto-renders the viewer. `--only <type>` for a single forward diagram. |
+| `/abcd-map` | reverse | Read code → design-level as-built: distilled OO class diagram (attributes + operations) + data model + system & design sequence diagrams + a stripped analysis domain model. `--flow <name>` maps a single flow; `--only <type>` emits one diagram. Auto-renders the viewer. |
 | `/abcd-view` | util | (Re)render a `design/` package into a self-contained `index.html` viewer — after hand-edits, or for a package you received. |
 
 ## Method (the important part)
