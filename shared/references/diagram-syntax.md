@@ -10,6 +10,8 @@
 | 业务序列图 / 系统序列图 | Mermaid `sequenceDiagram` | `.mmd` |
 | 设计序列图（对象/方法级） | Mermaid `sequenceDiagram` | `.design.mmd` |
 | 类图 / 领域模型 | Mermaid `classDiagram` | `.mmd` |
+| 提炼 OO 类图（含操作） | Mermaid `classDiagram` | `.oo.mmd` |
+| 数据模型（实体/外键） | Mermaid `classDiagram` / `erDiagram` | `.mmd` |
 | 状态机 | Mermaid `stateDiagram-v2` | `.mmd` |
 | ER | Mermaid `erDiagram` | `.mmd` |
 | 用例规约活动图（视图） | PlantUML activity | `.activity.puml` |
@@ -54,6 +56,7 @@ classDiagram
     Order "1" --> "*" OrderItem : 包含
 ```
 语义 / linter 见 method-abcd §3：只 泛化/关联/依赖；聚合空心◇ / 组合实心◆、菱形端=整体；默认普通关联；多重性只 `1`/`*`；类名单数名词。
+- **提炼 OO 类图**（逆向）：类带 **操作** `+method()` + 属性；边界类标 `<<boundary>>`；`✦` 注提炼操作（来自自由函数）。提炼配方见 method-abcd §4「信息专家」。
 
 ### 状态机（Mermaid）
 ```mermaid

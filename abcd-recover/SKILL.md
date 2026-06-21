@@ -38,7 +38,9 @@ allowed-tools:
 ### 2. 出设计级产物 → `recovered/`（provenance=reverse, level=design）
 - 每个流程一张**系统序列图**（Mermaid `sequenceDiagram`）：参与者 = 本系统 + 外部系统/服务 + actor；消息 = 服务间调用；`Note` 挂 `文件:行`。→ `sequences/<flow>.mmd`、`type=system-sequence`。
 - 关键流程可再出**设计序列图（对象/方法级）**：把上面那张里的"本系统"盒子拆开——泳道 = 内部代码模块/类，消息 = **真实方法调用**（顺调用链抽 `mod.method(args)` + 返回），`opt`/`alt`/`Note` 标分支与幂等/守门。它是 call graph、逆向最忠实，最适合给 AI 导航改代码。→ `sequences/<flow>.design.mmd`、`type=design-sequence`。
-- **类图**（Mermaid `classDiagram`）：涉及实体的 as-built 结构，**保留** id / 外键 / status（这就是设计级）。
+- **结构图（按代码风格出，如实标注，配方见 method-abcd §4 三视图）**：
+  - **提炼 OO 类图**（`type=class`, **hybrid**，默认）：属性←数据、操作←自由函数按**信息专家**归位（`✦` 标、可追溯 `文件:行`）、关系←外键+签名+调用图。→ `recovered/<scope>.oo.mmd`。
+  - **数据模型**（`type=data-model`, reverse）：schema→实体+字段+外键，持久化真相；**别当 OO 类图**。→ `recovered/class.mmd`。
 - 整模块时另出**架构图**（architecture-beta / C4）。
 
 ### 3. 剥离 → 分析级 `C-analysis/domain.mmd`（provenance=hybrid, level=analysis）

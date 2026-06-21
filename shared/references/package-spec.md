@@ -51,7 +51,7 @@ design/
     {
       "id": "biz-seq-checkout-tobe",
       "workflow": "A",                     // A|B|C|D
-      "type": "business-sequence",         // usecase|business-usecase|business-sequence|system-sequence|design-sequence|class|state|er|architecture
+      "type": "business-sequence",         // usecase|business-usecase|business-sequence|system-sequence|design-sequence|class|data-model|state|er|architecture
       "tool": "mermaid",                   // mermaid|plantuml
       "provenance": "forward",             // forward|reverse|hybrid
       "level": "business",                 // business|requirement|analysis|design

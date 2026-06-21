@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.0
+
+- **Distilled OO class diagram from any code** (`/abcd-recover`): even for functional / data-oriented code, recover a true OO class diagram — attributes from data structures, **operations from free functions reassigned by Information Expert (GRASP) / responsibility assignment**, relations from FK + signatures + call graph. Distilled operations are marked `✦` and each traces to a real function (`file:line`); provenance `hybrid`. Rationale: OO is an analysis lens, not a property of the code's syntax — functional code still has a latent object model.
+- **Three honest "structure" views, no more conflation** (`method-abcd` §4): (1) distilled OO class diagram (`type=class`, hybrid) — the default design class diagram; (2) data model (`type=data-model`, reverse) — entities / fields / FK from schema, never dressed up as an OO class diagram; (3) analysis domain model (stripped, conceptual). `diagram-syntax` + `package-spec` updated (`<<boundary>>`, operations, `data-model` type).
+
 ## 0.2.0
 
 - **Design sequence diagrams (object/method level)**: `/abcd-trace --level design` and `/abcd-recover` now recover a design-level sequence whose lifelines are code modules/classes and whose messages are **real method calls** — the call graph for one flow. It's the most faithful reverse artifact (names come straight from code) and the best map for an AI to navigate and modify code. New `type: design-sequence`, file `recovered/sequences/<flow>.design.mmd`. Complements the coarser system-sequence (which keeps the system a black box).
