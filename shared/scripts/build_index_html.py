@@ -16,10 +16,10 @@ import pathlib
 import re
 
 WF = {
-    "A": "A · 业务建模",
-    "B": "B · 需求",
-    "C": "C · 分析",
-    "D": "D · 设计 / 逆向",
+    "A": "A · Business modeling",
+    "B": "B · Requirements",
+    "C": "C · Analysis",
+    "D": "D · Design / Reverse",
 }
 
 
@@ -62,7 +62,7 @@ def render_card(d, design: pathlib.Path):
 
     src = read(design / d.get("file", ""))
     if src is None:
-        view = f'<div class="missing">缺文件：{html.escape(d.get("file", ""))}</div>'
+        view = f'<div class="missing">missing file: {html.escape(d.get("file", ""))}</div>'
     elif d.get("tool") == "mermaid":
         view = f'<pre class="mermaid">{html.escape(src)}</pre>'
     else:  # plantuml (or anything non-mermaid)
@@ -74,8 +74,8 @@ def render_card(d, design: pathlib.Path):
             view = f'<div class="svgwrap">{svg}</div>'
         else:
             view = (
-                "<details><summary>PlantUML 源码（装 plantuml 后由 /abcd-handoff "
-                f'预渲染为 SVG）</summary><pre class="src">{html.escape(src)}</pre></details>'
+                "<details><summary>PlantUML source (install plantuml so /abcd-handoff "
+                f'pre-renders it to SVG)</summary><pre class="src">{html.escape(src)}</pre></details>'
             )
     return (
         f'<article class="card"><div class="chead"><h3>{title}</h3>'
@@ -118,13 +118,14 @@ def main():
             for g in v.get("goals", [])
         )
         parts.append(
-            '<div class="vision"><b>愿景</b> · 老大：'
-            f'{html.escape(str(v.get("boss", "")))} · 组织：'
+            '<div class="vision"><b>Vision</b> · boss: '
+            f'{html.escape(str(v.get("boss", "")))} · org: '
             f'{html.escape(str(v.get("organization", "")))}<ul>{goals}</ul></div>'
         )
     parts.append(
         f'<p class="muted">generated {html.escape(str(m.get("generated", "")))} · '
-        f"{len(diagrams)} diagrams · 图源为单一事实源，Mermaid 在浏览器本地渲染</p></header>"
+        f"{len(diagrams)} diagrams · source is the single source of truth; "
+        "Mermaid renders locally in the browser</p></header>"
     )
 
     for wf in ["A", "B", "C", "D"]:
@@ -143,8 +144,8 @@ def main():
             for t in tr
         )
         parts.append(
-            '<section><h2>追溯链</h2><table><thead><tr><th>用例</th>'
-            f"<th>分析类</th><th>代码</th></tr></thead><tbody>{rows}</tbody></table></section>"
+            '<section><h2>Traceability</h2><table><thead><tr><th>Use case</th>'
+            f"<th>Analysis classes</th><th>Code</th></tr></thead><tbody>{rows}</tbody></table></section>"
         )
 
     out = TEMPLATE.replace("{{TITLE}}", sysname).replace("{{BODY}}", "\n".join(parts))
@@ -153,7 +154,7 @@ def main():
 
 
 TEMPLATE = """<!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -169,7 +170,7 @@ TEMPLATE = """<!doctype html>
   }
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--fg);
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
     line-height:1.6;padding:32px 20px}
   .wrap{max-width:1000px;margin:0 auto}
   header{border-bottom:1px solid var(--bd);padding-bottom:16px;margin-bottom:8px}

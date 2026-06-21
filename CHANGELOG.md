@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.1
+
+- **Docs in English** (`README`, all five `SKILL.md`, the four `shared/references/`, plus script comments and the HTML viewer UI). Only the book citation (潘加宇《软件方法》) and a few Chinese invocation triggers are kept — makes the skill cleanly shareable.
+- **README: Prerequisites + Quickstart** added (Claude Code / python3 / optional plantuml+graphviz; new-project `/abcd-model` vs existing-code `/abcd-recover` → `/abcd-handoff`), and the Skills table refreshed for the v0.2–v0.3 features (HTML viewer, design-sequence, distilled OO class / data model).
+
 ## 0.3.0
 
 - **Distilled OO class diagram from any code** (`/abcd-recover`): even for functional / data-oriented code, recover a true OO class diagram — attributes from data structures, **operations from free functions reassigned by Information Expert (GRASP) / responsibility assignment**, relations from FK + signatures + call graph. Distilled operations are marked `✦` and each traces to a real function (`file:line`); provenance `hybrid`. Rationale: OO is an analysis lens, not a property of the code's syntax — functional code still has a latent object model.

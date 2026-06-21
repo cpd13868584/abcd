@@ -21,7 +21,7 @@ elif [ -n "${PLANTUML_JAR:-}" ] && command -v java >/dev/null 2>&1; then
 fi
 
 if [ -z "$PUML" ]; then
-  echo "plantuml not found — skipping PlantUML pre-render (HTML viewer will fold source)."
+  echo "plantuml not found — skipping PlantUML pre-render (the HTML viewer will fold source)."
   echo "  install for offline rendering:"
   echo "    macOS : brew install plantuml"
   echo "    Debian: sudo apt-get install -y plantuml"
@@ -34,7 +34,6 @@ if ! command -v dot >/dev/null 2>&1; then
 fi
 
 mkdir -p "$ABS/rendered"
-n=0
 # manifest → "<id>\t<file>" for every tool=plantuml diagram
 python3 - "$MANIFEST" <<'PY' | while IFS=$'\t' read -r id file; do
 import json, sys
@@ -49,7 +48,6 @@ PY
   if $PUML -tsvg -o "$ABS/rendered" "$src" >/dev/null 2>&1; then
     [ "$base.svg" != "$id.svg" ] && mv -f "$ABS/rendered/$base.svg" "$ABS/rendered/$id.svg"
     echo "rendered: rendered/$id.svg"
-    n=$((n + 1))
   else
     echo "render failed: $file"
   fi

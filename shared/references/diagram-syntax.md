@@ -1,95 +1,95 @@
-# 图法速查 (diagram-syntax)
+# diagram syntax reference (diagram-syntax)
 
-工具分工：**Mermaid** 画类图 / 序列图 / 状态机 / ER；**PlantUML** 画用例图（Mermaid 无原生 usecase；PlantUML 是 AI 生成 UML 的缺省表示）+ 用例规约的活动图视图。**语义规则见 `method-abcd.md`**；本文件只给语法模板与风格。
+Tool split: **Mermaid** for class / sequence / state / ER; **PlantUML** for use-case diagrams (Mermaid has no native usecase; PlantUML is the default representation AI generates UML in) + the activity-diagram view of a use-case spec. **Semantic rules live in `method-abcd.md`**; this file is only syntax templates and style.
 
-## 选型表
+## Picking a tool
 
-| 图 | 工具 | 后缀 |
+| Diagram | Tool | Suffix |
 |---|---|---|
-| 业务用例图 / 系统用例图 | PlantUML | `.puml` |
-| 业务序列图 / 系统序列图 | Mermaid `sequenceDiagram` | `.mmd` |
-| 设计序列图（对象/方法级） | Mermaid `sequenceDiagram` | `.design.mmd` |
-| 类图 / 领域模型 | Mermaid `classDiagram` | `.mmd` |
-| 提炼 OO 类图（含操作） | Mermaid `classDiagram` | `.oo.mmd` |
-| 数据模型（实体/外键） | Mermaid `classDiagram` / `erDiagram` | `.mmd` |
-| 状态机 | Mermaid `stateDiagram-v2` | `.mmd` |
+| Business / system use-case diagram | PlantUML | `.puml` |
+| Business / system sequence diagram | Mermaid `sequenceDiagram` | `.mmd` |
+| Design sequence diagram (object/method level) | Mermaid `sequenceDiagram` | `.design.mmd` |
+| Class diagram / domain model | Mermaid `classDiagram` | `.mmd` |
+| Distilled OO class diagram (with operations) | Mermaid `classDiagram` | `.oo.mmd` |
+| Data model (entities / FKs) | Mermaid `classDiagram` / `erDiagram` | `.mmd` |
+| State machine | Mermaid `stateDiagram-v2` | `.mmd` |
 | ER | Mermaid `erDiagram` | `.mmd` |
-| 用例规约活动图（视图） | PlantUML activity | `.activity.puml` |
-| 架构图 | Mermaid `architecture-beta` / C4 | `.mmd` |
+| Use-case-spec activity diagram (view) | PlantUML activity | `.activity.puml` |
+| Architecture | Mermaid `architecture-beta` / C4 | `.mmd` |
 
-## 模板
+## Templates
 
-### 用例图（PlantUML）
+### Use-case diagram (PlantUML)
 ```plantuml
 @startuml
 left to right direction
-actor 储户 as A1
+actor Depositor as A1
 rectangle ATM {
-  usecase "取现金" as UC1
+  usecase "Withdraw cash" as UC1
 }
 A1 --> UC1
 @enduml
 ```
 
-### 序列图（Mermaid）
+### Sequence diagram (Mermaid)
 ```mermaid
 sequenceDiagram
-    actor U as 执行者
-    participant S as 系统
-    participant X as 外部系统
-    U->>S: 动宾(参数)
-    S->>X: 动宾
-    X-->>S: 结果
+    actor U as Actor
+    participant S as System
+    participant X as ExternalSystem
+    U->>S: verbObject(args)
+    S->>X: verbObject
+    X-->>S: result
     Note over S: path:line
 ```
-- **业务序列图**：消息=责任、不写"请求"、不画返回、系统黑箱（method-abcd §2）。
-- **系统序列图（逆向设计级）**：泳道 = 本系统 + 外部系统/服务；消息 = 服务间调用，可画返回；`Note` 挂 `文件:行`。
-- **设计序列图（逆向设计级 · 对象/方法级）**：泳道 = 系统内部代码模块/类，消息 = 真实方法调用 `mod.method(args)`，可画返回（`-->>`）；`opt`/`alt`/`loop` 表分支，幂等/守门/异常分支用 `Note`；`Note` 挂 `文件:行`；文件 `<flow>.design.mmd`、`type=design-sequence`。它把系统序列图里的"系统"盒子拆成内部对象协作。
+- **Business sequence diagram**: message = responsibility, never write "request", never draw returns, system is a black box (method-abcd §2).
+- **System sequence diagram (reverse, design-level)**: lifelines = this system + external systems/services; messages = service calls, returns allowed; hang `file:line` in a `Note`.
+- **Design sequence diagram (reverse, design-level · object/method level)**: lifelines = internal code modules/classes; messages = real method calls `mod.method(args)`, returns allowed (`-->>`); branch with `opt`/`alt`/`loop`, mark idempotency/guard/exception branches with `Note`; hang `file:line` in `Note`; file `<flow>.design.mmd`, `type=design-sequence`. It opens the "system" box of the system sequence into internal object collaboration.
 
-### 类图（Mermaid）
+### Class diagram (Mermaid)
 ```mermaid
 classDiagram
     class Order {
       string code
       decimal total
     }
-    Order "1" --> "*" OrderItem : 包含
+    Order "1" --> "*" OrderItem : contains
 ```
-语义 / linter 见 method-abcd §3：只 泛化/关联/依赖；聚合空心◇ / 组合实心◆、菱形端=整体；默认普通关联；多重性只 `1`/`*`；类名单数名词。
-- **提炼 OO 类图**（逆向）：类带 **操作** `+method()` + 属性；边界类标 `<<boundary>>`；`✦` 注提炼操作（来自自由函数）。提炼配方见 method-abcd §4「信息专家」。
+Semantics / linter: see method-abcd §4 — only generalization/association/dependency; aggregation hollow ◇ / composition filled ◆, diamond end = the whole; default plain association; multiplicity only `1`/`*`; class names are singular nouns.
+- **Distilled OO class diagram** (reverse): classes carry **operations** `+method()` + attributes; mark boundary classes `<<boundary>>`; note distilled operations with `✦` (they come from free functions). Distillation recipe: method-abcd §4 "Information Expert".
 
-### 状态机（Mermaid）
+### State machine (Mermaid)
 ```mermaid
 stateDiagram-v2
-    [*] --> 待支付
-    待支付 --> 已支付: 支付
-    已支付 --> [*]
+    [*] --> Pending
+    Pending --> Paid: pay
+    Paid --> [*]
 ```
 
-### ER（Mermaid）
+### ER (Mermaid)
 ```mermaid
 erDiagram
     ORDER ||--o{ ORDER_ITEM : contains
 ```
 
-### 活动图（PlantUML，用例规约路径视图）
+### Activity diagram (PlantUML, use-case-spec path view)
 ```plantuml
 @startuml
-|执行者|
+|Actor|
 start
-:输入金额;
-|系统|
-if (合法且余额足?) then (是)
-  :扣减余额;
-  :回应;
-else (否)
-  :提示;
+:Enter amount;
+|System|
+if (valid & sufficient balance?) then (yes)
+  :Deduct balance;
+  :Respond;
+else (no)
+  :Notify;
 endif
 stop
 @enduml
 ```
 
-## 风格
-- 标签用核心域术语、动宾；sentence case；少装饰。
-- 逆向序列图用 `Note` 挂 `文件:行`（追溯）。
-- 一张图只表达一个视角；跨图一致性靠 `manifest`（元模型层），别让各图自漂。
+## Style
+- Labels use core-domain terms, verb-object; sentence case; minimal decoration.
+- Reverse sequence diagrams hang `file:line` in a `Note` (traceability).
+- One diagram expresses one viewpoint; cross-diagram consistency lives in `manifest` (the metamodel layer) — don't let diagrams drift apart.

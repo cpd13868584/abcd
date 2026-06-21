@@ -1,150 +1,150 @@
-# abcd 方法学速查 (method-abcd)
+# abcd method reference (method-abcd)
 
-对潘加宇《软件方法》ABCD 工作流的**精炼编码**，作为 abcd 各指令的共享规则源（渐进式披露：SKILL.md 按需引用本文件）。深层 UML 语义以原书为准：<https://umlchina.com/book/softmeth.htm>。本文件是规则编码，不复制原书内容。
-
----
-
-## 0. 三条宪法（任何指令都要守）
-
-1. **利润 = 需求 − 设计**。需求 = "好卖"（涉众视角，对系统做功能分包），设计 = "低成本"（内部视角，按耦合内聚切割）。二者互不可推、非一一映射。
-2. **AI 压低 D，价值上移到 ABC（尤其 A）**。AI 在 ABC 工作流还不能当"专家"，只能当一个很聪明的学生——用本方法学**给它解毒**、引导它。
-3. **不能从代码倒推需求 / 业务**。逆向得到的天然是**设计级**且混入非核心域污染。用例该不该有、类是泛化还是关联、是不是组合，要**从领域逻辑判断，不拿代码证明**。
+A condensed encoding of the ABCD workflow from 潘加宇《软件方法》(Pan Jiayu, *Software Methodology*, UMLChina), serving as the shared rule source for every abcd command (progressive disclosure: SKILL.md references this file on demand). For deeper UML semantics, defer to the book: <https://umlchina.com/book/softmeth.htm>. This file encodes rules; it does not reproduce the book's text.
 
 ---
 
-## 1. ABCD 与推导纪律
+## 0. Three constitutional rules (every command obeys)
 
-| 工作流 | 一句话 | 更准的名字 |
+1. **Profit = Requirements − Design.** Requirements = "sells well" (stakeholder view: package functions for the system); Design = "low cost" (internal view: partition by coupling/cohesion). Neither derives from the other; they are not one-to-one.
+2. **AI collapses D; value moves up to ABC (especially A).** In the ABC workflows AI is not yet an "expert" — only a very smart student. Use this method to **detoxify** and guide it.
+3. **You cannot reverse-engineer requirements / business from code.** What reverse gives is inherently **design-level** and polluted with non-core-domain noise. Whether a use case should exist, whether a relation is generalization or association, whether it is composition — judge from **domain logic, not from code**.
+
+---
+
+## 1. ABCD and the derivation discipline
+
+| Workflow | One line | Sharper name |
 |---|---|---|
-| A 业务建模 | 定位要改进的目标组织 + 它最该改进的问题 | 组织改进 |
-| B 需求 | 待引入系统必须具有的整体表现 | 系统责任 |
-| C 分析 | 系统要封装的核心域机制 | 核心域逻辑 |
-| D 设计 | 把核心域机制映射到实现 | 实现 |
+| A Business modeling | Locate the target organization to improve + the problem it most needs fixed | Organization improvement |
+| B Requirements | The overall behavior the system-to-be must have | System responsibility |
+| C Analysis | The core-domain mechanism the system must encapsulate | Core-domain logic |
+| D Design | Map the core-domain mechanism to an implementation | Implementation |
 
-**每层从上一层推导**。核心引擎（A→B）：业务序列图画**现状** → 套改进模式得**改进版** → 改进版上**指向待引入系统的每一条消息 = 一个系统用例**。
+**Each layer derives from the one above.** Core engine (A→B): draw the business sequence **as-is** → apply the improvement patterns → **to-be** → on the to-be, **every message pointing at the system-to-be = one system use case**.
 
-书真正倚重 5 图、核心 3 图：**用例图 / 类图 / 序列图**。
-
----
-
-## 2. A 业务建模
-
-### 愿景（`A-business/vision.md`）
-**老大 + 目标组织 + 量化改进目标**。
-- 老大 = 目标组织的代表，**一个具体的人**（姓名+职位），系统最优先照顾其利益。**爆炸法**定老大：若只能向一个人推销系统、说一句话，那个人/那句话就是老大/愿景。自家团队领导不是老大（他是"决定老大的人"）。
-- 目标 = 对**组织行为**的可度量改进（不是系统功能、不是质量需求）。对形容词追问得到度量（"方便"→完成一张订单的平均操作次数）。
-
-### 业务用例图（PlantUML `usecase`）
-组织"对外价值"视角。元素：**业务执行者**（组织外部，边界外）、**业务用例**（= 执行者从组织获得的价值，椭圆）、**边界框**（标研究对象是哪个组织，初学者必画）。
-- 业务工人、业务实体**不上**业务用例图（它们是成本不是价值）。
-- 业务用例名**禁**"新增/查看/录入/查询/修改/配置"等系统味词（"查询××"→"了解××"）。
-
-### 业务序列图（Mermaid `sequenceDiagram`）—— 招牌
-组织"内部由系统协作"视角。
-- **参与者只有三类**：业务工人 `«business worker»`、业务实体 `«business entity»`（含已有软件系统、ATM 等非人智能系统）、**时间**。命名 `:角色`。
-- **消息 = 责任分配，不是数据流**：动宾、**不写"请求"二字**、**不画返回消息**，数据只作输入/输出参数。
-- **系统一律黑箱**：只画它与外部的消息，**不画内部组件 / 内部多步**。
-- 无智能物（单据/纸）不能当参与者，只能作消息**参数**。
-- 分支/循环用 `opt` / `loop` / `alt`。
-- **现状（as-is）必须如实**（亲临现场画观察到的），是改进的基础。
-
-**四种改进模式**（从现状推改进版时逐条套）：
-1. **物流变信息流**：把物里有价值的信息提炼出来，改由软件交换（剩余空间已不多）。
-2. **改善信息流转**：多系统沟通不畅 → 引入系统居中协调，减少人/系统的交互次数。
-3. **封装领域逻辑**：把人脑（老司机）的判断/计算提炼进系统（难度最大、当下空间最大）。
-4. **阿布思考法**：先假设资源充足画完美方案，再用现有资源"山寨"它。
-
-→ 改进版业务序列图上，**指向待引入系统的每条消息 → 一个系统用例**。
+The book leans on 5 diagrams, 3 of them core: **use-case diagram / class diagram / sequence diagram**.
 
 ---
 
-## 3. B 需求
+## 2. A — Business modeling
 
-### 系统用例图（PlantUML `usecase`）
-- **执行者** = 业务序列图中与所研究系统有**实线相连**的对象（不必另行头脑风暴）。执行者 ≠ "用户" ≠ 重要程度；只接收信息、无需有意识响应的人是**涉众**不是执行者。
-- 用例名**动宾**、砍主语、忌弱动词（"进行发票作废"→"作废发票"）。
-- 主执行者 → 用例（发起）；辅执行者 ← 用例（被动，须"有意识参与响应"）。
-- **include** = 抽多个用例共用、且自成小目标的"**步骤集合**"为被包含用例（多→一，正文用【粗括号】调用，类似私有操作）。**extend** 慎用（不是"先 A 后可能 B/C"）。多执行者指向同一用例 → **拆成不同用例**，别用泛化"用户"复用。
-- 不给子系统/组件/模块画用例图。
-- **反模式**：CRUD 四件套、"管理 XX" 用例（都是从数据库表/设计倒推需求）；把步骤当用例（"登录"不是用例）。
+### Vision (`A-business/vision.md`)
+**Boss + target organization + quantified improvement goal.**
+- The **boss (老大)** = the representative of the target organization, **one concrete person** (name + title) whose interest the system serves first. Pin the boss with the **"explosion" test**: if you could pitch the system to only one person and say only one sentence, that person / that sentence is the boss / the vision. Your own team lead is not the boss (they are "the one who decides the boss").
+- The **goal** = a measurable improvement to **organization behavior** (not a system feature, not a quality requirement). Drill an adjective down to a metric ("convenient" → average number of operations to complete one order).
 
-### 用例规约（hybrid：结构化文本为源 + 生成活动图视图）
-`specs/<uc>.md` 含**全部字段**：
-- **执行者**（标主/辅）
-- **前置 / 后置条件** = 系统**可检测的状态**（非动作）；"已登录"不作前置（见 include）。
-- **涉众利益**：醉酒法找涉众；四来源 = 人类执行者 / 上游 / 下游 / 信息的主人（最易漏）。各涉众利益要**写得不一样、写出具体痛苦**。
-- **基本路径** = **四步曲**：请求（必有）/ 验证 / 改变 / 回应。一步一句；只写系统能感知和承诺的；**主语只能是主执行者或系统**（禁"前端请求后端"——哪怕系统遍布百国，需求里只有两字"系统"）；用核心域术语；不涉界面/交互细节。
-- **扩展路径**：`Na` / `Na1` 编号（步号+字母）；只收"**系统能感知且要处理**的意外"。
-- **补充约束**四类：
-  - 字段列表（数据字典符号 `+ () {} [|]`，写到涉众有共识即止；**不贴数据模型图**）
-  - 业务规则（涉众"不这样不行"的运算规则，非实现算法）
-  - 质量需求（可用性/性能/可靠性/可支持性，**须可度量**）
-  - 设计约束（也从涉众视角写）
-- **终极判据**：**"不这样不行"才是需求**，"这样也行"不是。
+### Business use-case diagram (PlantUML `usecase`)
+The organization's "value to the outside" view. Elements: **business actor** (outside the organization, beyond the boundary), **business use case** (= the value an actor gets from the organization, ellipse), **boundary box** (marks which organization is under study; beginners must draw it).
+- Business workers and business entities **do not appear** on the business use-case diagram (they are cost, not value).
+- Business use-case names **forbid** system-flavored words like add/view/enter/query/edit/configure ("query XX" → "understand XX").
 
-**生成视图**：把基本+扩展路径段机械转成 PlantUML 活动图（每步→动作节点、每个 `Na`→判断分支、泳道分 `执行者|系统`）。文本是单一源，活动图是渲染视图，不另手维护。
+### Business sequence diagram (Mermaid `sequenceDiagram`) — the flagship
+The "organization collaborating internally via the system" view.
+- **Only three kinds of participant**: business worker `«business worker»`, business entity `«business entity»` (incl. existing software systems, ATMs and other non-human intelligent systems), and **time**. Name as `:role`.
+- **A message = responsibility assignment, not a data flow**: verb-object, **never write the word "request"**, **never draw return messages**; data is only an input/output parameter.
+- **The system is always a black box**: draw only its messages with the outside, **never its internal components / internal steps**.
+- Non-intelligent things (forms/paper) cannot be participants, only message **parameters**.
+- Branch / loop with `opt` / `loop` / `alt`.
+- **The as-is must be faithful** (drawn from on-site observation) — it is the basis for improvement.
 
----
+**Four improvement patterns** (apply each when deriving to-be from as-is):
+1. **Physical flow → information flow**: extract the valuable information from physical things and exchange it via software (little room left here).
+2. **Improve information flow**: poor multi-system communication → introduce a system in the middle to coordinate, cutting human/system interactions.
+3. **Encapsulate domain logic**: distill the expert's judgment/calculation into the system (hardest; the most room today).
+4. **Abu method (阿布思考法)**: first assume unlimited resources and draw the perfect plan, then "knock it off" with the resources you actually have.
 
-## 4. C 分析
-
-### 分析 / 领域类图（Mermaid `classDiagram`）
-- 以**实体类**为主（边界类/控制类按套路机械映射、可推迟）。
-- **分析 = 零时间、无限资源**。判"分析 vs 设计"的标准是**性能/时间**：对每个元素问"去掉它会怎样？——答'会有性能问题'就从分析模型删"。
-
-**逆向降级（设计级 → 分析级）剥离清单**：去掉 ① 对象 ID / 标识属性 ② 外键 ③ 名为"状态"的属性 ④ List/数组等多值实现 ⑤ 单据/卡片照搬成的类 ⑥ 为性能加的冗余。剥完再做上面的"性能"测试。
-
-### 类图 linter（硬语义，画错就改）
-- **只有三种关系：泛化 / 关联 / 依赖**。
-- 聚合（空心菱形）/ 组合（实心菱形）是**关联的子类**，菱形端 = 整体。组合两约束：部分同一时刻只属一个整体；整体销毁部分随之销毁。
-- **默认普通关联，无足够证据不上组合/聚合**；**不标 aggregate root、不圈聚合边界**（书判为冗余/错误概念）。
-- **多重性只在关联**，默认只用 `1` 和 `*`；**泛化无多重性**。
-- 泛化 = 集合包含语义；子类**默认不相交**、不强求完整；不允许（间接）自反泛化。
-- **依赖**只在序列图体现（哪场景/哪步/调什么）；纯领域类图**不画依赖**。
-- 命名：**单数名词**；不加"类/信息/记录/表"等冗余后缀、不加 ID/状态属性、属性名不带类名；用核心域术语（"说人话"）。
-- 关联：**优先标角色名（名词）**；方向看"系统更有责任/兴趣关注谁的状态"（注意 RDB 外键方向可能相反、关联名阅读箭头≠导航方向）；关联是"系统**不得不记住**"的关系——能用规律算出来的（如字符串包含）不建关联。
-- **低价值信号**：长得像用例图的类图（"顾客—查询—商品"）；满是 `er/or/器/策略/Rule/算法` 但只有操作没有属性的伪 OO 类。
-
-### 从代码提炼类图（逆向三视图 + 信息专家）
-
-逆向"结构"按代码风格出三种、**如实标注别混淆**：
-1. **提炼 OO 类图**（`type=class`, provenance=**hybrid**, level=design）——**任何代码都能出**，默认的"设计类图"。属性 ← 数据结构；**操作 ← 自由函数/handler 按「信息专家(GRASP)/职责分配」归位**（谁拥有数据谁负责操作，`recordSentEmail()`→`EmailMessage.record()`）；关联 ← 外键+函数签名共现；依赖 ← 调用图。诚实规则：归位含建模判断 → 标 `hybrid`；提炼操作标 `✦`（代码里是自由函数）；每个操作可追溯真实函数 `文件:行`。**OO 是分析思维、不是代码语法——函数式/数据导向代码同样有对象模型，提炼即可。**
-2. **数据模型**（`type=data-model`/`er`, reverse, design）—— schema/ORM → 实体+字段+外键，持久化真相。**别当 OO 类图**（无操作；外键方向≠关联方向）。
-3. **分析领域模型**（hybrid, analysis）—— 在①上套类图 linter + 剥离清单降级：去 id/外键/状态串/**实现操作**、概念化命名（= 纯领域概念）。
+→ On the to-be business sequence diagram, **every message pointing at the system-to-be → one system use case**.
 
 ---
 
-## 5. D 设计
+## 3. B — Requirements
 
-**正向**：设计层"**代码就是表示**"，**默认不画 UML**——做好分析模型 → 定制"分析→设计"的有规律映射套路 → 工具/AI/人按套路映射；只挑**典型类/典型用例**画几张展示套路，不全画。
+### System use-case diagram (PlantUML `usecase`)
+- **Actor** = the objects with a **solid line to the system under study** in the business sequence diagram (no separate brainstorm needed). Actor ≠ "user" ≠ importance; someone who only receives information and need not consciously respond is a **stakeholder**, not an actor.
+- Use-case names are **verb-object**, drop the subject, avoid weak verbs ("perform invoice voiding" → "void invoice").
+- Primary actor → use case (initiates); secondary actor ← use case (passive, must "consciously participate in the response").
+- **include** = factor a "**step set**" shared by multiple use cases and self-contained as a small goal into an included use case (many→one, called in the body with 【bold brackets】, like a private operation). Use **extend** sparingly (it is not "A then maybe B/C"). Multiple actors at one use case → **split into separate use cases**; don't reuse via a generalized "user".
+- Don't draw use-case diagrams for subsystems/components/modules.
+- **Anti-patterns**: the CRUD quartet, "manage XX" use cases (both reverse requirements from DB tables/design); treating a step as a use case ("log in" is not a use case).
 
-**逆向 / 导航**（AI 时代高价值）：从代码可靠恢复**设计级**三种图，给人和 AI 导航实现——
-- **类图（结构）**：as-built 实体 + 字段（含 id/外键/状态/JSON），即 §4 剥离前的设计级。
-- **系统序列图（粗粒度交互）**：泳道 = 本系统 + 外部系统/服务（DB / 第三方 / 其它服务），消息 = 服务间调用 / endpoint。回答"这条流程牵动哪些系统"。
-- **设计序列图（对象/方法级）**：泳道 = 系统**内部**代码模块/类，消息 = **真实方法调用**（`mod.method(args)` + 返回）。回答"这条流程在代码里怎么一步步推进"。它本质是 **call graph**、**逆向最忠实**（方法名直接来自代码，不臆造），最适合让 AI 顺着函数改代码。
-  - 系统序列图把系统当一个盒子；设计序列图把盒子**拆开**成内部对象协作——同一流程两者互补。
-  - `Note` 挂 `文件:行`；`opt`/`alt`/`loop` 表分支；幂等/守门/异常分支用 `Note` 标。`type=design-sequence`，文件 `recovered/sequences/<flow>.design.mmd`。
+### Use-case spec (hybrid: structured text as source + generated activity-diagram view)
+`specs/<uc>.md` holds **all fields**:
+- **Actors** (mark primary/secondary).
+- **Pre / post-conditions** = **system-detectable states** (not actions); "already logged in" is not a precondition (see include).
+- **Stakeholder interests**: use the "drunk" test to find stakeholders; four sources = human actors / upstream / downstream / the owner of the information (most easily missed). Write each interest **differently, with concrete pain**.
+- **Basic path** = **four steps**: request (always) / validate / change / respond. One sentence per step; write only what the system can sense and promise; **the subject can only be the primary actor or the system** (no "frontend requests backend" — even a system spanning a hundred countries is just the word "system" in requirements); use core-domain terms; no UI/interaction detail.
+- **Extension paths**: numbered `Na` / `Na1` (step number + letter); collect only "**exceptions the system can sense and must handle**".
+- **Supplementary constraints**, four kinds:
+  - field list (data-dictionary notation `+ () {} [|]`, write until stakeholders agree; **do not paste a data-model diagram**)
+  - business rules (computational rules stakeholders "can't do without", not implementation algorithms)
+  - quality requirements (usability/performance/reliability/supportability, **must be measurable**)
+  - design constraints (also written from the stakeholder view)
+- **Ultimate test**: **"can't do without it" = a requirement**; "this also works" is not.
+
+**Generated view**: mechanically convert the basic + extension paths into a PlantUML activity diagram (each step → action node, each `Na` → decision branch, swimlanes `actor|system`). Text is the single source; the activity diagram is a rendered view, not maintained by hand.
 
 ---
 
-## 6. 正向 vs 逆向边界（硬纪律）
+## 4. C — Analysis
 
-**心法（现状 as-is vs 改进 to-be）**：逆向代码 ≈ 拿到**现状**——但只在**系统/设计级**完整（类图 / 系统序列图 / 设计序列图 / 架构图 = "现在代码长什么样"）；**业务级现状**只能逆向出"碰系统的骨架"，手工 / 线下 / 口头那部分不在代码里，要对话补。**改进（to-be）任何层都不在代码里**，只能**正向对话**得到——像 `plan-ceo-review` / `plan-eng-review` 那样换"业务老大 / 工程"视角反复追问。一句话：**系统现状 = 逆向；改进 + 业务意图 = 正向对话。**
+### Analysis / domain class diagram (Mermaid `classDiagram`)
+- Centered on **entity classes** (boundary/control classes map mechanically by formula, can be deferred).
+- **Analysis = zero time, infinite resources.** The test for "analysis vs design" is **performance/time**: for each element ask "what if I remove it? — if the answer is 'there'd be a performance problem', delete it from the analysis model."
 
-| 产物 | 正向（对话/人提供） | 逆向（读代码） |
+**Reverse downgrade (design-level → analysis-level) stripping list**: remove ① object ID / identity attributes ② foreign keys ③ attributes literally named "status" ④ List/array multi-value implementations ⑤ classes copied straight from forms/cards ⑥ redundancy added for performance. Then re-run the "performance" test above.
+
+### Class-diagram linter (hard semantics, fix on sight)
+- **Only three relations: generalization / association / dependency.**
+- Aggregation (hollow diamond) / composition (filled diamond) are **subtypes of association**, diamond end = the whole. Composition's two constraints: a part belongs to only one whole at a time; destroying the whole destroys the parts.
+- **Default to plain association; no composition/aggregation without sufficient evidence**; **do not mark an aggregate root, do not circle aggregate boundaries** (the book deems these redundant/wrong concepts).
+- **Multiplicity only on associations**, default to just `1` and `*`; **generalization has no multiplicity**.
+- Generalization = set-inclusion semantics; subclasses are **disjoint by default**, completeness not required; no (indirect) reflexive generalization.
+- **Dependency** appears only in sequence diagrams (which scenario/step/call); a pure domain class diagram **draws no dependency**.
+- Naming: **singular noun**; no redundant suffix like "class/info/record/table", no ID/status attribute, attribute names don't repeat the class name; use core-domain terms ("plain language").
+- Associations: **prefer a role name (noun)**; direction follows "whose state the system is more responsible for / interested in" (note an RDB foreign key may point the opposite way, and the association-name reading arrow ≠ navigation direction); an association is a relation the system **must remember** — if it can be computed by a rule (e.g. string containment), don't model it.
+- **Low-value signals**: a class diagram that looks like a use-case diagram ("customer—query—product"); pseudo-OO classes full of `-er/Strategy/Rule/Algorithm` with operations but no attributes.
+
+### Distilling class diagrams from code (three reverse views + Information Expert)
+
+When reversing "structure", produce three views by code style and **label them honestly, never conflate**:
+1. **Distilled OO class diagram** (`type=class`, provenance=**hybrid**, level=design) — **producible from any code**, the default "design class diagram". Attributes ← data structures; **operations ← free functions/handlers reassigned by «Information Expert (GRASP) / responsibility assignment»** (whoever owns the data owns the operation, `recordSentEmail()` → `EmailMessage.record()`); associations ← foreign keys + entities co-occurring in function signatures; dependencies ← the call graph. Honesty rules: reassignment involves modeling judgment → mark `hybrid`; mark distilled operations with `✦` (they are free functions in the code); every operation traces to a real function `file:line`. **OO is an analysis lens, not a code-syntax property — functional / data-oriented code still has a latent object model; distill it.**
+2. **Data model** (`type=data-model`/`er`, reverse, design) — schema/ORM → entities + fields + foreign keys, the persistence truth. **Do not treat it as an OO class diagram** (no operations; FK direction ≠ association direction).
+3. **Analysis domain model** (hybrid, analysis) — downgrade from ① by applying the class-diagram linter + stripping list: remove id/FK/status-string/**implementation operations**, name conceptually (= pure domain concepts).
+
+---
+
+## 5. D — Design
+
+**Forward**: at the design level "**code is the representation**", **draw no UML by default** — build a good analysis model → customize a regular "analysis→design" mapping → tool/AI/human map by the rules; draw only a few **representative classes/use cases** to demonstrate the pattern, not everything.
+
+**Reverse / navigation** (high value in the AI era): reliably recover three **design-level** diagrams from code to help humans and AI navigate the implementation —
+- **Class diagram (structure)**: as-built entities + fields (incl. id/FK/status/JSON), i.e. the design level before the §4 stripping.
+- **System sequence diagram (coarse interaction)**: lifelines = this system + external systems/services (DB / third parties / other services), messages = service calls / endpoints. Answers "which systems does this flow touch".
+- **Design sequence diagram (object/method level)**: lifelines = **internal** code modules/classes, messages = **real method calls** (`mod.method(args)` + returns). Answers "how this flow advances step by step in the code". It is essentially a **call graph**, the **most faithful reverse artifact** (method names come straight from code, nothing invented), and the best map for AI to modify code along the functions.
+  - The system sequence treats the system as one box; the design sequence **opens the box** into internal object collaboration — the two complement each other for the same flow.
+  - Hang `file:line` in `Note`; branch with `opt`/`alt`/`loop`; mark idempotency/guard/exception branches with `Note`. `type=design-sequence`, file `recovered/sequences/<flow>.design.mmd`.
+
+---
+
+## 6. Forward vs reverse boundary (hard discipline)
+
+**Mindset (as-is vs to-be)**: reversing code ≈ getting the **as-is** — but complete only at the **system/design level** (class / system-sequence / design-sequence / architecture = "what the code looks like now"); the **business-level as-is** can only be reversed as a "skeleton touching the system", while the manual / offline / verbal parts are not in the code and must be filled by dialogue. **The to-be (improvement) at any level is not in the code** — it can only be obtained by **forward dialogue**, like `plan-ceo-review` / `plan-eng-review` repeatedly probing from the "business-owner / engineering" lenses. In one line: **system as-is = reverse; improvement + business intent = forward dialogue.**
+
+| Artifact | Forward (dialogue / human-provided) | Reverse (read code) |
 |---|---|---|
-| 愿景 / 老大 / 量化目标 | ✓ 唯一来源 | ✗ |
-| 业务用例图 | ✓ | ✗ |
-| 业务序列图 | ✓ 完整 | **hybrid**：逆向出骨架（系统↔外部系统交互、入口放泛化 actor）→ agent 主动问询/给建议补全人工/现状/改进 |
-| 系统用例图 / 用例规约 | ✓ | ✗ |
-| 分析类图 | ✓ 干净分析级 | ⚠ 出设计级，需剥离降级（§4） |
-| 架构图 / 系统序列图 / 设计序列图(对象·方法级) / 类图 | —（D 默认不画 UML，正向直接出代码） | ✓ 设计级 as-built 可靠恢复；设计序列图 = call graph、最忠实 |
+| Vision / boss / quantified goal | ✓ sole source | ✗ |
+| Business use-case diagram | ✓ | ✗ |
+| Business sequence diagram | ✓ complete | **hybrid**: reverse a skeleton (system↔external interactions, entry as a generalized actor) → the agent actively asks / suggests to complete the manual / as-is / to-be parts |
+| System use-case diagram / use-case spec | ✓ | ✗ |
+| Analysis class diagram | ✓ clean analysis-level | ⚠ comes out design-level, needs stripping (§4) |
+| Architecture / system-sequence / design-sequence (object·method level) / class diagram | — (D draws no UML by default; forward goes straight to code) | ✓ design-level as-built reliably recoverable; design-sequence = call graph, most faithful |
 
-逆向产物标 `provenance: reverse` / `level: design` / `gaps`，放 `recovered/`。**需求层永不逆向。** 逆向**禁止臆造**：只从真实产物提取（schema→ER/类图、路由→系统序列图、集成点→业务序列图骨架），无依据不编。
+Mark reverse artifacts `provenance: reverse` / `level: design` / `gaps`, place them in `recovered/`. **The requirements layer is never reversed.** Reverse **must not invent**: extract only from real artifacts (schema→ER/class diagram, routes→system sequence, integration points→business-sequence skeleton); fabricate nothing without evidence.
 
 ---
 
-## 7. 工具与"建模 vs 绘图"
+## 7. Tooling and "modeling vs drawing"
 
-- 主干 **Mermaid**（类图/序列图/状态机/ER）；**用例图 = PlantUML**（Mermaid 无原生 usecase；PlantUML 是 AI 生成 UML 的缺省表示）。用例规约活动图视图 = PlantUML。
-- **`manifest.json` 是元模型层**：把各图/用例/类/代码用 id 串成单一、一致、可导航的模型，避免"各图独立、不一致"的**绘图而非建模**通病。每写一张图，问"它带来增值了吗？"——AI 时代尤其。
+- Backbone **Mermaid** (class/sequence/state/ER); **use-case diagram = PlantUML** (Mermaid has no native usecase; PlantUML is the default representation AI generates UML in). The use-case-spec activity-diagram view = PlantUML.
+- **`manifest.json` is the metamodel layer**: it strings every diagram/use-case/class/code together by id into one consistent, navigable model, avoiding the "each diagram independent and inconsistent" — **drawing instead of modeling** — failure mode. For every diagram you write, ask "did it add value?" — especially in the AI era.

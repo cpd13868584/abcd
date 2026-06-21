@@ -1,9 +1,11 @@
 ---
 name: abcd-recover
 description: |
-  逆向：读代码 → 设计级 as-built（类图 / 架构图 / 系统交互序列图）+ 剥离后的分析级领域模型。
-  只恢复"设计级"，绝不冒充需求/业务模型。Use when asked to "逆向出设计包", "读代码出类图",
-  "recover design from code", "reverse this codebase". (abcd)
+  Reverse: read code → design-level as-built (distilled OO class / data model /
+  architecture / system & design sequence diagrams) + a stripped analysis-level
+  domain model. Recovers the *design level* only; never fakes the requirements/business
+  model. Use when asked to "recover design from code", "reverse this codebase",
+  "逆向出设计包", "读代码出类图". (abcd)
 allowed-tools:
   - Bash
   - Read
@@ -16,47 +18,47 @@ allowed-tools:
 
 # /abcd-recover [path] [--flow <name>]
 
-逆向读代码，产出**设计级 as-built** 设计包（+ 剥离的分析级草模），写进目标项目的 `design/`（见 package-spec）。**绝不从代码臆造业务/需求层。**
+Read code in reverse and produce a **design-level as-built** design package (+ a stripped analysis-level draft), written into the target project's `design/` (see package-spec). **Never invent the business/requirements layer from code.**
 
-开工前按需读（渐进式披露）：
-- `shared/references/method-abcd.md` — §3–4（分析剥离清单、类图 linter）、§6（正逆边界）
-- `shared/references/package-spec.md` — 设计包结构 + manifest schema
-- `shared/references/diagram-syntax.md` — Mermaid / PlantUML 图法模板
+Read on demand (progressive disclosure):
+- `shared/references/method-abcd.md` — §4 (stripping list, class linter, distillation), §6 (forward/reverse boundary)
+- `shared/references/package-spec.md` — design-package structure + manifest schema
+- `shared/references/diagram-syntax.md` — Mermaid / PlantUML templates
 
-## 流程
+## Flow
 
-### 0. 定范围
-确认目标目录；问清是**单流程**（`--flow 达人外联`）还是**整模块**。单流程优先。
+### 0. Scope
+Confirm the target directory; ask whether it's a **single flow** (`--flow outreach`) or a **whole module**. Prefer single flow.
 
-### 1. 测绘（hybrid：脚本骨架 + LLM 语义）
-- **确定性骨架**（有脚本就跑 `shared/scripts/`，否则直接读）：
-  - schema（SQL DDL / Drizzle / Prisma / SQLAlchemy / OpenAPI）→ 实体 + 字段 + 外键 + 多重性。
-  - 路由注册（controller / Hono / FastAPI / Tauri command）→ 入口列表（method, path, handler `文件:行`）。
-- **LLM 语义**（脚本做不了的）：从入口顺调用链 handler → service → 外部系统 / DB，整理成**有序消息列表**（参与者 A → 参与者 B：做某事 + `文件:行`）；识别外部参与者（DB、第三方、其他服务、LLM）。
-- 大库用 `Agent`（Explore）并行测绘。**只读、不改、不臆造**；拿不准标"不确定"。
+### 1. Survey (hybrid: script skeleton + LLM semantics)
+- **Deterministic skeleton** (run `shared/scripts/` if present, else read directly):
+  - schema (SQL DDL / Drizzle / Prisma / SQLAlchemy / OpenAPI) → entities + fields + foreign keys + multiplicity.
+  - route registration (controller / Hono / FastAPI / Tauri command) → entry list (method, path, handler `file:line`).
+- **LLM semantics** (what scripts can't do): follow the call chain from each entry handler → service → external system / DB into an **ordered message list** (participant A → participant B: does something + `file:line`); identify external participants (DB, third parties, other services, LLMs).
+- For a large codebase, survey in parallel with `Agent` (Explore). **Read-only, no edits, no invention**; mark "uncertain" when unsure.
 
-### 2. 出设计级产物 → `recovered/`（provenance=reverse, level=design）
-- 每个流程一张**系统序列图**（Mermaid `sequenceDiagram`）：参与者 = 本系统 + 外部系统/服务 + actor；消息 = 服务间调用；`Note` 挂 `文件:行`。→ `sequences/<flow>.mmd`、`type=system-sequence`。
-- 关键流程可再出**设计序列图（对象/方法级）**：把上面那张里的"本系统"盒子拆开——泳道 = 内部代码模块/类，消息 = **真实方法调用**（顺调用链抽 `mod.method(args)` + 返回），`opt`/`alt`/`Note` 标分支与幂等/守门。它是 call graph、逆向最忠实，最适合给 AI 导航改代码。→ `sequences/<flow>.design.mmd`、`type=design-sequence`。
-- **结构图（按代码风格出，如实标注，配方见 method-abcd §4 三视图）**：
-  - **提炼 OO 类图**（`type=class`, **hybrid**，默认）：属性←数据、操作←自由函数按**信息专家**归位（`✦` 标、可追溯 `文件:行`）、关系←外键+签名+调用图。→ `recovered/<scope>.oo.mmd`。
-  - **数据模型**（`type=data-model`, reverse）：schema→实体+字段+外键，持久化真相；**别当 OO 类图**。→ `recovered/class.mmd`。
-- 整模块时另出**架构图**（architecture-beta / C4）。
+### 2. Emit design-level artifacts → `recovered/` (provenance=reverse, level=design)
+- One **system sequence diagram** per flow (Mermaid `sequenceDiagram`): participants = this system + external systems/services + actor; messages = service calls; hang `file:line` in `Note`. → `sequences/<flow>.mmd`, `type=system-sequence`.
+- For key flows, also emit a **design sequence diagram (object/method level)**: open the "this system" box of the above — lifelines = internal code modules/classes, messages = **real method calls** (pull `mod.method(args)` + returns along the call chain), mark branches and idempotency/guards with `opt`/`alt`/`Note`. It is a call graph, the most faithful reverse view, the best map for AI to modify code. → `sequences/<flow>.design.mmd`, `type=design-sequence`.
+- **Structure diagram (by code style, labeled honestly; recipe in method-abcd §4 three views)**:
+  - **Distilled OO class diagram** (`type=class`, **hybrid**, default): attributes ← data, operations ← free functions reassigned by **Information Expert** (mark `✦`, traceable to `file:line`), relations ← FKs + signatures + call graph. → `recovered/<scope>.oo.mmd`.
+  - **Data model** (`type=data-model`, reverse): schema → entities + fields + FKs, the persistence truth; **don't treat it as an OO class diagram**. → `recovered/class.mmd`.
+- For a whole module, also emit an **architecture diagram** (architecture-beta / C4).
 
-### 3. 剥离 → 分析级 `C-analysis/domain.mmd`（provenance=hybrid, level=analysis）
-- 按 method-abcd §4 剥离清单去污染（id / 外键 / status 串 / 时间戳 / List 实现 / 单据照搬类 / 性能冗余）；用"去掉它会怎样？——'有性能问题'就删"测试。
-- 套类图 linter（method-abcd §3）：默认普通关联、无 aggregate root、多重性只 `1`/`*`、类名单数名词、**把领域概念从被污染表里提炼出来**、status → 状态机（不作属性）。
-- 本系统不维护的实体标"外部，仅引用"。
+### 3. Strip → analysis-level `C-analysis/domain.mmd` (provenance=hybrid, level=analysis)
+- Decontaminate per the method-abcd §4 stripping list (id / FK / status-string / timestamps / List impl / form-copied classes / perf redundancy); use the "what if removed? — 'perf problem' → delete" test.
+- Apply the class-diagram linter (method-abcd §4): default plain association, no aggregate root, multiplicity only `1`/`*`, singular-noun class names, **lift domain concepts out of the polluted tables**, status → state machine (not an attribute).
+- Mark entities this system doesn't own as "external, reference only".
 
-### 4. 写 manifest + README（见 package-spec）
-- 每图填 `workflow/type/tool/provenance/level/gaps/code_refs(文件:行)`。
-- **gaps 必须如实记代码给不了的**：`"业务/需求层未恢复（愿景/系统用例/规约）——需 /abcd-model 正向补全"`。
-- glossary（核心域术语）、traceability（用例→分析类→代码，逆向时用例待补）、`ai_spec.is_implementation_input=false`。
+### 4. Write manifest + README (see package-spec)
+- Fill each diagram's `workflow/type/tool/provenance/level/gaps/code_refs(file:line)`.
+- **gaps must honestly record what code can't give**: `"requirements layer not recovered (vision/system use case/spec) — needs /abcd-model forward"`.
+- glossary (core-domain terms), traceability (use case→analysis class→code; use cases pending on reverse), `ai_spec.is_implementation_input=false`.
 
-### 5. 边界（硬纪律）
-逆向**只到设计级** + 剥离的分析级草模。**愿景 / 系统用例 / 用例规约绝不从代码生成**，一律入 `gaps`。产物物理隔离：reverse → `recovered/`；剥离后的分析 → `C-analysis/`。
+### 5. Boundary (hard discipline)
+Reverse goes **only to the design level** + a stripped analysis draft. **Vision / system use case / use-case spec are never generated from code** — all go into `gaps`. Physically separate: reverse → `recovered/`; stripped analysis → `C-analysis/`.
 
-### 6. 渲染（可选）
-Mermaid：`mmdc` 或复用 gstack `/diagram`；用例图：PlantUML。`.md` 内 mermaid 在 GitHub 原生可看。
+### 6. Render (optional)
+Mermaid: `mmdc`, or reuse gstack `/diagram`; use-case diagrams: PlantUML. Mermaid in `.md` renders natively on GitHub. For a shareable HTML viewer, run `/abcd-handoff`.
 
-**完成后**告诉用户：产出在 `<target>/design/`（未跟踪）、有哪些 `gaps`、建议接 `/abcd-model` 补需求层。
+**When done**, tell the user: output is in `<target>/design/` (untracked), which `gaps` exist, and suggest `/abcd-model` to fill the requirements layer.
