@@ -58,6 +58,15 @@ All commands are project-agnostic: point them at any project.
 | `/abcd-map` | reverse | Read code → design-level as-built: distilled OO class diagram (attributes + operations) + data model + system & design sequence diagrams + a stripped analysis domain model. `--flow <name>` maps a single flow; `--only <type>` emits one diagram. Auto-renders the viewer. |
 | `/abcd-view` | util | (Re)render a `design/` package into a self-contained `index.html` viewer — after hand-edits, or for a package you received. |
 
+### Flags
+
+| Flag | Command(s) | Values | What it does |
+|---|---|---|---|
+| `--flow <name>` | `map` | a flow name | Map just one end-to-end flow → its sequence diagram(s). |
+| `--level <g>` | `map` | `system` \| `design` | Sequence granularity: service ↔ service black box, or object/method-level call graph. |
+| `--only <type>` | `map`, `model` | a diagram type | Generate a single diagram. **map**: `class` / `data-model` / `architecture` / `domain` / `system-sequence` / `design-sequence`. **model**: `business-usecase` / `business-sequence` / `usecase` / `spec` / `analysis-class`. (map refuses forward types → use model.) |
+| `--to <layer>` | `model` | `A` \| `B` \| `C` | Stop forward modeling at workflow A, B, or C. |
+
 ## Method (the important part)
 
 Grounded in 《软件方法》's core discipline:
