@@ -40,6 +40,8 @@ TYPE_GLOSS = {
     "data-model": "Data model — entities, fields &amp; foreign keys from the schema. Structure only, no behaviour — not an OO class diagram.",
     "system-sequence": "System sequence — one flow with each service as a black box (service ↔ service).",
     "design-sequence": "Design sequence — the same flow drilled into code: lifelines are modules/classes, messages are real method calls (the call graph).",
+    "state": "State machine — an entity's lifecycle: states + allowed transitions (and who may trigger each). A status field belongs here, not as a class attribute.",
+    "contract": "Contract — interface + pre/post-conditions + Given/When/Then acceptance at a use-case / service boundary, synthesized from spec + sequences. Lets people / agents implement parts in parallel and still fit together.",
 }
 
 
@@ -61,7 +63,7 @@ def legend_html(diagrams, m):
     types_here = {d.get("type") for d in diagrams if d.get("type")}
     order = [
         "business-usecase", "business-sequence", "usecase", "activity",
-        "domain-model", "class", "data-model", "system-sequence", "design-sequence",
+        "domain-model", "class", "data-model", "state", "system-sequence", "design-sequence", "contract",
     ]
     present = [t for t in order if t in types_here]
     present += [t for t in sorted(types_here) if t not in present and t in TYPE_GLOSS]
@@ -140,6 +142,8 @@ def render_card(d, design: pathlib.Path):
         view = f'<div class="missing">missing file: {html.escape(d.get("file", ""))}</div>'
     elif d.get("tool") == "mermaid":
         view = f'<pre class="mermaid">{html.escape(src)}</pre>'
+    elif d.get("tool") == "markdown":
+        view = f'<details open><summary>contract (markdown source)</summary><pre class="src">{html.escape(src)}</pre></details>'
     else:  # plantuml (or anything non-mermaid)
         svgp = design / "rendered" / (str(d.get("id", "")) + ".svg")
         if svgp.exists():

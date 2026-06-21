@@ -19,6 +19,7 @@ design/
     usecases.puml           # system use-case diagram (PlantUML)
     specs/<usecase>.md            # use-case spec (structured text, single source, all fields)
     specs/<usecase>.activity.puml # activity diagram mechanically generated from the path steps (view)
+    contracts/<usecase>.md        # interface + pre/post + Given/When/Then (derived; for multi-party / parallel implementation)
   C-analysis/               # forward: analysis
     domain.mmd              # analysis class diagram / domain model
     states/<entity>.mmd     # entity state machine (optional)
@@ -28,6 +29,7 @@ design/
     architecture.mmd
     sequences/<flow>.mmd             # system sequence diagram (system ↔ external systems/services)
     sequences/<flow>.design.mmd      # design sequence diagram (object/method level, optional)
+    states/<entity>.mmd              # entity state machine (from a transition table/enum; type=state)
     business-sequence-skeleton.mmd   # business-sequence skeleton (gap-marked, for /abcd-model to complete)
   rendered/*.svg            # rendered diagrams (for humans; AI reads the source, no rendered needed)
 ```
@@ -53,7 +55,7 @@ design/
     {
       "id": "biz-seq-checkout-tobe",
       "workflow": "A",                     // A|B|C|D
-      "type": "business-sequence",         // usecase|business-usecase|business-sequence|system-sequence|design-sequence|class|data-model|state|er|architecture
+      "type": "business-sequence",         // usecase|business-usecase|business-sequence|system-sequence|design-sequence|class|data-model|state|contract|er|architecture
       "tool": "mermaid",                   // mermaid|plantuml
       "provenance": "forward",             // forward|reverse|hybrid
       "level": "business",                 // business|requirement|analysis|design

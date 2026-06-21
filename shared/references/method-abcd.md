@@ -84,6 +84,16 @@ The "organization collaborating internally via the system" view.
 
 **Generated view**: mechanically convert the basic + extension paths into a PlantUML activity diagram (each step → action node, each `Na` → decision branch, swimlanes `actor|system`). Text is the single source; the activity diagram is a rendered view, not maintained by hand.
 
+### Contracts (for parallel implementation, optional)
+
+The use-case spec **is** the contract (pre/post + paths + supplementary constraints). When several people / agents implement parts **in parallel**, extract a focused **contract** per use case or service boundary so the independent pieces still fit — it is a *synthesis* of existing artifacts, not new invention:
+- **Interface**: the boundary messages / signatures (pull from the system & design sequences).
+- **Pre/post-conditions** (from the spec) + **invariants / business rules** (from supplementary constraints).
+- **State-transition contract**: which actor may move the entity to which state (from the `state` machine).
+- **Acceptance** as Given/When/Then (from `ai_spec.acceptance` + the basic/extension paths).
+
+→ `B-requirements/contracts/<uc>.md`, `type=contract`. **Skip it for solo, sequential implementation** — the spec + analysis model + sequences already suffice (`ai_spec.is_implementation_input=true`). Add it only when parallel/independent implementation makes the inter-part interface the bottleneck.
+
 ---
 
 ## 4. C — Analysis

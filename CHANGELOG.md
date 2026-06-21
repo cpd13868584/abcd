@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.0
+
+- **State machines as a first-class diagram** (`type=state`): `/abcd-map --only state` recovers an entity's lifecycle from its transition table / status enum — states + allowed transitions + which actor may trigger each. A `status` field belongs in a state machine, not as a class attribute (method-abcd §4).
+- **Contracts for parallel implementation** (`type=contract`): `/abcd-model --only contract` synthesizes a per-use-case contract — interface + pre/post + invariants + state-transition rules + Given/When/Then acceptance — from the existing spec + sequences + `ai_spec`. A synthesis (not new invention) for when several people / agents implement parts in parallel; skip it for solo sequential work. Written to `B-requirements/contracts/<uc>.md`.
+- Viewer legend + README Concepts document both new types; the HTML viewer renders `type=contract` markdown inline.
+
 ## 0.6.0
 
 - **`--only <type>` — generate a single diagram** on both commands. `/abcd-map --only class|data-model|architecture|domain|system-sequence|design-sequence` (reverse types; sequence types pair with `--flow`); `/abcd-model --only business-usecase|business-sequence|usecase|spec|analysis-class` (forward types). `/abcd-map` **refuses forward types** and points to `/abcd-model` — keeping the "requirements can't be reversed from code" boundary intact.

@@ -64,7 +64,7 @@ All commands are project-agnostic: point them at any project.
 |---|---|---|---|
 | `--flow <name>` | `map` | a flow name | Map just one end-to-end flow → its sequence diagram(s). |
 | `--level <g>` | `map` | `system` \| `design` | Sequence granularity: service ↔ service black box, or object/method-level call graph. |
-| `--only <type>` | `map`, `model` | a diagram type | Generate a single diagram. **map**: `class` / `data-model` / `architecture` / `domain` / `system-sequence` / `design-sequence`. **model**: `business-usecase` / `business-sequence` / `usecase` / `spec` / `analysis-class`. (map refuses forward types → use model.) |
+| `--only <type>` | `map`, `model` | a diagram type | Generate a single diagram/artifact. **map**: `class` / `data-model` / `architecture` / `domain` / `state` / `system-sequence` / `design-sequence`. **model**: `business-usecase` / `business-sequence` / `usecase` / `spec` / `analysis-class` / `contract`. (map refuses forward types → use model.) |
 | `--to <layer>` | `model` | `A` \| `B` \| `C` | Stop forward modeling at workflow A, B, or C. |
 
 ## Method (the important part)
@@ -93,6 +93,8 @@ The same system is modeled at four levels (A→D); each diagram type answers a d
 | Data model | D | Entities, fields and foreign keys from the schema — structure only, *not* an OO class diagram. |
 | System sequence | D | One flow with each service as a black box (service ↔ service). |
 | Design sequence | D | The same flow drilled into code: lifelines are modules/classes, messages are real method calls (the call graph). |
+| State machine | C / D | An entity's lifecycle: states + allowed transitions and who may trigger each. A `status` field belongs here, not as a class attribute. |
+| Contract | B | Interface + pre/post + Given/When/Then at a use-case / service boundary, derived for multi-party / parallel implementation. |
 
 **Provenance:** `forward` = modeled with you, top-down · `reverse` = recovered from code (the as-is) · `hybrid` = recovered skeleton + modeling judgment.
 

@@ -6,7 +6,7 @@ description: |
   sequence diagrams) + a stripped analysis-level domain model, then auto-render an
   HTML viewer. Recovers the *design level* only; never fakes the requirements/
   business model. `--flow <name>` maps a single end-to-end flow; `--only <type>`
-  emits just one diagram (class / data-model / architecture / sequence). Use when
+  emits just one diagram (class / data-model / architecture / state / sequence). Use when
   asked to "map this codebase", "reverse this code", "analyze the as-is", "逆向出设计包",
   "读代码出类图", "画出这个流程的时序图". (abcd)
 allowed-tools:
@@ -32,7 +32,7 @@ Read on demand (progressive disclosure):
 - **`--flow <name>`** (lightweight, high-frequency): map just one end-to-end flow → its sequence diagram(s); skip class/stripping. The common daily case.
 - **no `--flow`** (whole module): the full package below.
 - **`--level system|design`** picks sequence granularity (for a flow, default emits both): `system` = service ↔ service black box; `design` = internal modules/classes + real method calls.
-- **`--only <type>`** (single diagram): emit just one diagram + its manifest entry, then render (step 6); do only the survey that diagram needs. Reverse types: `class` · `data-model` · `architecture` · `domain` (stripped analysis) · `system-sequence` / `design-sequence` (pair with `--flow <name>`). **Forward types** (`business-sequence` · `business-usecase` · `usecase` · `spec` · `analysis-class`) are **refused** — tell the user to run `/abcd-model --only <type>` instead (requirements/business can't be reversed from code).
+- **`--only <type>`** (single diagram): emit just one diagram + its manifest entry, then render (step 6); do only the survey that diagram needs. Reverse types: `class` · `data-model` · `architecture` · `domain` (stripped analysis) · `state` (entity state machine, from a transition table/enum) · `system-sequence` / `design-sequence` (pair with `--flow <name>`). **Forward types** (`business-sequence` · `business-usecase` · `usecase` · `spec` · `analysis-class`) are **refused** — tell the user to run `/abcd-model --only <type>` instead (requirements/business can't be reversed from code).
 
 ## Flow (whole module)
 
